@@ -2,14 +2,9 @@
 //const AWS = require('aws-sdk');
 const cheerio = require('cheerio');
 const got = require('got');
-const Promo = require('./models/promo')
 
-const HOT_TRESSHOLD = 200;
-const PAGE_SEARCH = 3
+exports.handler = (event) => {
 
-exports.handler = async (event) => {
-
-    console.time("execution_handler");
     const sites = [
         {
             siteName: "Promodescuentos",
@@ -33,32 +28,24 @@ exports.handler = async (event) => {
         console.log(`Scrapping ${site.siteName} on course...`)
         site.routes.forEach(route => {
             console.log(`Getting data from ${route.name}...`)
-            for(let i = 1 ; i <= 3; i++) {
-                const pageParam = `?page=${i}`
-                results.push(scrapURL(site.siteURL + route.path + pageParam, route.name))
-            }
+            const r = scrapURL(site.siteURL + route.path)
+            results.push(scrapURL(site.siteURL + route.path))
         });
+        
     });
-    storeInDatabase(await Promise.all(results));
 }
 
 /** 
  * It starts the search on the site passed as url parameter 
  */
-const scrapURL = async (url, category) => {
-    return new Promise(async (resolve, reject) => {
-        const promos = []
+const scrapURL = async (url) => {
+    return new Promise((resolve, reject) => {
         try {
             const response = await got(url);
             const $ = cheerio.load(response.body);
-            $('article').each((_, article) => {
-                    const promo = new Promo($(article));
-                    promos.push(promo);
-                }
-            )
 
             console.log($('article'));
-            resolve(promos);
+            resolve();
         }
         catch(err) {
             reject(err)
@@ -67,12 +54,11 @@ const scrapURL = async (url, category) => {
 }
 
 /**
- * Function that stores the data on DynamoDB
+ * Function that verif
  * @param {*} data 
  */
 const storeInDatabase = async (data) => {
-    console.log(data);
-    console.timeEnd("execution_handler");
+
 }
 
 exports.handler()
