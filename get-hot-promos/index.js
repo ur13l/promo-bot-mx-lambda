@@ -33,7 +33,7 @@ exports.handler = async (event) => {
         console.log(`Scrapping ${site.siteName} on course...`)
         site.routes.forEach(route => {
             console.log(`Getting data from ${route.name}...`)
-            for(let i = 1 ; i <= 3; i++) {
+            for(let i = 1 ; i <= PAGE_SEARCH; i++) {
                 const pageParam = `?page=${i}`
                 results.push(scrapURL(site.siteURL + route.path + pageParam, route.name))
             }
@@ -56,8 +56,6 @@ const scrapURL = async (url, category) => {
                     promos.push(promo);
                 }
             )
-
-            console.log($('article'));
             resolve(promos);
         }
         catch(err) {
@@ -67,7 +65,7 @@ const scrapURL = async (url, category) => {
 }
 
 /**
- * Function that stores the data on DynamoDB
+ * store data on DynamoDB
  * @param {*} data 
  */
 const storeInDatabase = async (data) => {
