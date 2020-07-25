@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Promodescuentos",
+    "url": "https://promodescuentos.com",
+    "routes": [
+      {
+        "name": "Videojuegos",
+        "path": "/grupo/videojuegos"
+      },
+      {
+        "name": "Tecnología",
+        "path": "/grupo/tecnologia"
+      }
+    ]
+  }
+]
