@@ -1,13 +1,62 @@
 'use strict'
 
+/**
+ * Class Promo
+ */
 class Promo {
-    constructor(rawArticle) {
-        this.degree = this.extractHTML(rawArticle, '.vote-temp--hot, .vote-temp--burn'); 
-        this.title = this.extractHTML(rawArticle, '.thread-title--card');
-        this.link = this.extractAttr(rawArticle, '.thread-title--card', 'href');
+    /**
+     * Constructor method for Promo
+     * @param {String} id 
+     * @param {Number} temp 
+     * @param {String} title 
+     * @param {String} link 
+     * @param {Date} date 
+     */
+    constructor(id = '', temp = 0, title = '', link = '', date = new Date()) {
+        this.id = id;
+        this.temp = temp
+        this.title = title
+        this.link = link
+        this.date = date
     }
 
-    extractHTML(elem, selector) {
+    /**
+     * Static method to generate a new Instance from a raw Item from cheerio.
+     * @param {*} rawArticle 
+     */
+    static newInstance(rawArticle) {
+        return new Promo(
+            rawArticle.attr('id'),
+            this.extractHTML(rawArticle, '.vote-temp--hot, .vote-temp--burn').replace('&#xB0;', ''),
+            this.extractHTML(rawArticle, '.thread-title--card'),
+            this.extractAttr(rawArticle, '.thread-title--card', 'href')
+        )
+    }
+
+    /**
+     * Static method to return an array of Promos from a DynamoDB result.
+     * @param {Array} array 
+     */
+    static batchFromRaw(array) {
+        const promos = []
+        array.forEach(elem => {
+            promos.push(new Promo(
+                elem.id,
+                elem.temp,
+                elem.title,
+                elem.link,
+                new Date(elem.date) 
+            ));
+        });
+        return promos;
+    }
+    
+    /**
+     * Cheerio helper method to scrap HTML from selector
+     * @param {*} elem 
+     * @param {String} selector 
+     */
+    static extractHTML(elem, selector) {
         const value = elem.find(selector).html();
         if(value) {
             return value.trim();
@@ -15,7 +64,13 @@ class Promo {
         return null;
     }
 
-    extractAttr(elem, selector, attr) {
+    /**
+     * Cheerio helper method to get an attribute of an element
+     * @param {*} elem 
+     * @param {String} selector 
+     * @param {String} attr 
+     */
+    static extractAttr(elem, selector, attr) {
         const value = elem.find(selector).attr(attr);
         if(value) {
             return value.trim();
