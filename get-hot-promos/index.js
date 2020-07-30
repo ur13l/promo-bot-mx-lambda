@@ -7,6 +7,7 @@ const Promo = require('./models/promo')
 const sites = require('./sites')
 
 const PAGE_SEARCH = 3
+const TELEGRAM_URL = `https://api.telegram.org/bot1342072847:AAEqGa6X5SPyudU1worL_UWkEvlqOHln0fY/sendMessage`
 
 exports.handler = async (event) => {
     const results = [];
@@ -49,7 +50,9 @@ exports.handler = async (event) => {
         const currentPromos = Promo.batchFromRaw(rawPromos)
 
         /** We call the function that will verify the existence of a promo and store it if new */
-        responseBody = checkAndStore(retrievedPromos, currentPromos);
+        const elems = await checkAndStore(retrievedPromos, currentPromos);
+        await broadcast(elems);
+        responseBody = `Elements saved successfully`
         statusCode = 200;
     }
     catch(err) {
@@ -57,6 +60,7 @@ exports.handler = async (event) => {
         responseBody = 'There was an error on the request: ' + err;
         statusCode = 403;
     }
+
 
     return {
         statusCode: statusCode,
@@ -114,36 +118,45 @@ const checkAndStore = async (data, currentPromos) => {
                 'id': promo.id,
                 'title': promo.title,
                 'temp': promo.temp,
-                'date': promo.date.getTime(),
-                'link': promo.link
+                'created_at': promo.created_at.getTime(),
+                'link': promo.link,
+                'price': promo.price
             }
         }
         results.push(documentClient.put(params).promise());
     }
     );
-    return await Promise.all(results);
-    /*
-    const items = [];
-    data.forEach(promo => {
-        items.push({
-            PutRequest: {
-                Item: {
-                    'id': promo.id,
-                    'title': promo.title,
-                    'temp': promo.temp,
-                    'date': promo.date.getTime(),
-                    'link': promo.link
-                }
-            }
-        })
-    });
-    const params = {
-        RequestItems: {
-            'promo_bot_mx_promos': items
-        }
-    };
+    await Promise.all(results);
+    return data;
+}
 
-    return await documentClient.batchWrite(params).promise();
-    */
+/**
+ * Broadcast elements
+ * @param data
+ * @returns {Promise<void>}
+ */
+const broadcast = async (data) => {
+    const messages = [];
+    data.forEach(promo => {
+        messages.push(sendMessage(`
+            ${promo.title} | ${promo.price? promo.price : ''} | ${promo.temp}º\n${promo.link}`));
+    });
+    await Promise.all(messages);
+}
+
+/**
+ * Sending message to Telegram Channel
+ * @param message
+ * @returns {Promise<*|CancelableRequest<Response<string>>>}
+ */
+const sendMessage = async (message) => {
+    const params = {
+        timeout: 3000,
+        searchParams: {
+            chat_id:'-1001159959356',
+            text: message
+        }
+    }
+    return got(TELEGRAM_URL, params);
 }
 

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="8153cf0d-2726-4316-83ba-a94f6de2d9c9" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/get-hot-promos/get-hot-promos.zip" beforeDir="false" afterPath="$PROJECT_DIR$/get-hot-promos/get-hot-promos.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/get-hot-promos/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/get-hot-promos/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/get-hot-promos/models/promo.js" beforeDir="false" afterPath="$PROJECT_DIR$/get-hot-promos/models/promo.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1fNnO706JLCM8L04VA5Zh9ZhTYt" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="javascript.nodejs.core.library.configured.version" value="12.18.2" />
+    <property name="javascript.nodejs.core.library.typings.version" value="12.12.53" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+  </component>
+  <component name="RunManager" selected="AWS Lambda.[Remote] get-hot-promos">
+    <configuration name="index.js" type="NodeJSConfigurationType" temporary="true" nameIsGenerated="true" path-to-js-file="$PROJECT_DIR$/delete-hot-promos/index.js" working-dir="$PROJECT_DIR$/delete-hot-promos">
+      <method v="2" />
+    </configuration>
+    <configuration name="[Remote] delete-hot-promos" type="aws.lambda" factoryName="Remote" temporary="true" nameIsGenerated="true">
+      <option name="credentialProviderId" value="profile:default" />
+      <option name="regionId" value="us-east-2" />
+      <option name="functionName" value="delete-hot-promos" />
+      <option name="input" value="{}" />
+      <option name="inputIsFile" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration name="[Remote] get-hot-promos" type="aws.lambda" factoryName="Remote" temporary="true" nameIsGenerated="true">
+      <option name="credentialProviderId" value="profile:default" />
+      <option name="regionId" value="us-east-2" />
+      <option name="functionName" value="get-hot-promos" />
+      <option name="input" value="{}" />
+      <option name="inputIsFile" value="false" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="AWS Lambda.[Remote] get-hot-promos" />
+        <item itemvalue="AWS Lambda.[Remote] delete-hot-promos" />
+        <item itemvalue="Node.js.index.js" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8153cf0d-2726-4316-83ba-a94f6de2d9c9" name="Default Changelist" comment="" />
+      <created>1596067382893</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1596067382893</updated>
+      <workItem from="1596067383979" duration="6603000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state width="1899" height="290" key="GridCell.Tab.0.bottom" timestamp="1596073048262">
+      <screen x="-1920" y="-157" width="1920" height="1057" />
+    </state>
+    <state width="1899" height="290" key="GridCell.Tab.0.bottom/0.23.1440.877/-1920.-157.1920.1057@-1920.-157.1920.1057" timestamp="1596073048262" />
+    <state width="1899" height="290" key="GridCell.Tab.0.center" timestamp="1596073048261">
+      <screen x="-1920" y="-157" width="1920" height="1057" />
+    </state>
+    <state width="1899" height="290" key="GridCell.Tab.0.center/0.23.1440.877/-1920.-157.1920.1057@-1920.-157.1920.1057" timestamp="1596073048261" />
+    <state width="1899" height="290" key="GridCell.Tab.0.left" timestamp="1596073048260">
+      <screen x="-1920" y="-157" width="1920" height="1057" />
+    </state>
+    <state width="1899" height="290" key="GridCell.Tab.0.left/0.23.1440.877/-1920.-157.1920.1057@-1920.-157.1920.1057" timestamp="1596073048260" />
+    <state width="1899" height="290" key="GridCell.Tab.0.right" timestamp="1596073048261">
+      <screen x="-1920" y="-157" width="1920" height="1057" />
+    </state>
+    <state width="1899" height="290" key="GridCell.Tab.0.right/0.23.1440.877/-1920.-157.1920.1057@-1920.-157.1920.1057" timestamp="1596073048261" />
+    <state x="-1595" y="104" key="SettingsEditor" timestamp="1596067832833">
+      <screen x="-1920" y="-157" width="1920" height="1057" />
+    </state>
+    <state x="-1595" y="104" key="SettingsEditor/0.23.1440.877/-1920.-157.1920.1057@-1920.-157.1920.1057" timestamp="1596067832833" />
+    <state width="600" height="428" key="javadoc.popup" timestamp="1596068379181">
+      <screen x="-1920" y="-157" width="1920" height="1057" />
+    </state>
+    <state width="600" height="428" key="javadoc.popup/0.23.1440.877/-1920.-157.1920.1057@-1920.-157.1920.1057" timestamp="1596068379181" />
+  </component>
+</project>

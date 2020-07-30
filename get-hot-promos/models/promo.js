@@ -10,14 +10,16 @@ class Promo {
      * @param {Number} temp 
      * @param {String} title 
      * @param {String} link 
-     * @param {Date} date 
+     * @param {Date} created_at
+     * @param {String} price
      */
-    constructor(id = '', temp = 0, title = '', link = '', date = new Date()) {
+    constructor(id = '', temp = 0, title = '', link = '', price, created_at = new Date()) {
         this.id = id;
         this.temp = temp
         this.title = title
         this.link = link
-        this.date = date
+        this.price = price
+        this.created_at = created_at
     }
 
     /**
@@ -29,7 +31,8 @@ class Promo {
             rawArticle.attr('id'),
             this.extractHTML(rawArticle, '.vote-temp--hot, .vote-temp--burn').replace('&#xB0;', ''),
             this.extractHTML(rawArticle, '.thread-title--card'),
-            this.extractAttr(rawArticle, '.thread-title--card', 'href')
+            this.extractAttr(rawArticle, '.thread-title--card', 'href'),
+            this.extractHTML(rawArticle, '.thread-price')
         )
     }
 
@@ -45,7 +48,8 @@ class Promo {
                 elem.temp,
                 elem.title,
                 elem.link,
-                new Date(elem.date) 
+                elem.price,
+                new Date(elem.created_at) 
             ));
         });
         return promos;
