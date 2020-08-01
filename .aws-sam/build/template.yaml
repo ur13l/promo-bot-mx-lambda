@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'promo-bot-mx
+
+  Sample SAM Template for promo-bot-mx
+
+  '
+Globals:
+  Function:
+    Timeout: 6
+Resources:
+  GetHotPromosPuppeteer:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: GetHotPromosPuppeteer
+      Handler: app.handler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Role: arn:aws:iam::919590014828:role/LambdaExecutionDynamoDBRole
+Outputs:
+  GetHotPromosPuppeteer:
+    Description: Puppeteer Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - GetHotPromosPuppeteer
+      - Arn

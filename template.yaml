@@ -1,0 +1,30 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  promo-bot-mx
+
+  Sample SAM Template for promo-bot-mx
+  
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 6
+
+Resources:
+  GetHotPromosPuppeteer:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    LogicalResourceId:
+    Properties:
+      CodeUri: get-hot-promos-puppeteer/
+      Handler: app.handler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Role: arn:aws:iam::919590014828:role/LambdaExecutionDynamoDBRole
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  GetHotPromosPuppeteer:
+    Description: "Puppeteer Lambda Function ARN"
+    Value: !GetAtt GetHotPromosPuppeteer.Arn
