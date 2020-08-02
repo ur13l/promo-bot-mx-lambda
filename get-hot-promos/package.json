@@ -1,0 +1,28 @@
+{
+  "name": "get-hot-promos",
+  "version": "1.0.0",
+  "description": "Lambda function to get promos from Promodescuentos and store them on a DynamoDB table, this function will be collecting data periodically for a bot that will publish on Telegram.\" ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ur13l/promo-bot-mx-lambda.git"
+  },
+  "keywords": [
+    "bot",
+    "promos"
+  ],
+  "author": "ur13l",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/ur13l/promo-bot-mx-lambda/issues"
+  },
+  "homepage": "https://github.com/ur13l/promo-bot-mx-lambda#readme",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "got": "^11.5.1"
+  }
+}
