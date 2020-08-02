@@ -8,23 +8,49 @@ Description: >
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-    Timeout: 6
+    Runtime: nodejs12.x
 
 Resources:
-  GetHotPromosPuppeteer:
+  GetHotPromos:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    LogicalResourceId:
     Properties:
-      CodeUri: get-hot-promos-puppeteer/
+      CodeUri: get-hot-promos/
+      Handler: app.handler
+      Runtime: nodejs12.x
+      MemorySize: 1024
+      Timeout: 5
+      Role: arn:aws:iam::919590014828:role/LambdaExecutionDynamoDBRole
+      Environment:
+        Variables:
+          TELEGRAM_URL: https://api.telegram.org/bot1342072847:AAEqGa6X5SPyudU1worL_UWkEvlqOHln0fY/sendMessage
+          ENVIRONMENT: prod
+      Events:
+        ExecuteEvery20Minutes:
+          Type: Schedule
+          Properties:
+            Schedule: rate(20 minutes)
+  DeleteHotPromos:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: delete-hot-promos/
       Handler: app.handler
       Runtime: nodejs12.x
       MemorySize: 128
+      Timeout: 5
       Role: arn:aws:iam::919590014828:role/LambdaExecutionDynamoDBRole
-
+      Environment:
+        Variables:
+          ENVIRONMENT: prod
+          THRESHOLD_DAYS: 5
+      Events:
+        ExecuteEveryDay:
+          Type: Schedule
+          Properties:
+            Schedule: rate(1 day)
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  GetHotPromosPuppeteer:
-    Description: "Puppeteer Lambda Function ARN"
-    Value: !GetAtt GetHotPromosPuppeteer.Arn
+  GetHotPromos:
+    Description: "Lambda to get and save new Hot Promos"
+    Value: !GetAtt GetHotPromos.Arn
