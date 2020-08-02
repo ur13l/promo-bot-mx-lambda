@@ -11,21 +11,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1f28e768-04ca-4983-a40d-a9796f7c48eb" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/delete-hot-promos/app.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/delete-hot-promos/package.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/env.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.aws-sam/build/GetHotPromosPuppeteer/app.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.aws-sam/build/GetHotPromosPuppeteer/package.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.aws-sam/build/template.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/promo-bot-mx.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/promo-bot-mx.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/events/event.json" beforeDir="false" afterPath="$PROJECT_DIR$/events/event.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/get-hot-promos-puppeteer/.npmignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/get-hot-promos-puppeteer/app.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/get-hot-promos-puppeteer/package.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/get-hot-promos-puppeteer/tests/unit/test-handler.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/template.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/template.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/env.json" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,7 +69,7 @@
       <updated>1596246337134</updated>
       <workItem from="1596246338217" duration="3050000" />
       <workItem from="1596305138717" duration="1023000" />
-      <workItem from="1596306193620" duration="9850000" />
+      <workItem from="1596306193620" duration="10207000" />
     </task>
     <servers />
   </component>
