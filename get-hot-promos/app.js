@@ -16,7 +16,6 @@ const documentClient = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10'
 AWS.config.update({region: 'us-east-2'});
 
 exports.handler = async (event) => {
-    console.log(ENDPOINT);
     const results = [];
     let responseBody = {};
     let statusCode = 0;
