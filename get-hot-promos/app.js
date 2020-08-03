@@ -3,11 +3,17 @@
 const AWS = require('aws-sdk');
 const cheerio = require('cheerio');
 const got = require('got');
-const Promo = require('./models/promo')
-const sites = require('./sites')
+const Promo = require('./models/promo');
+const sites = require('./sites');
 
-const PAGE_SEARCH = 3
-const TELEGRAM_URL = `https://api.telegram.org/bot1342072847:AAEqGa6X5SPyudU1worL_UWkEvlqOHln0fY/sendMessage`
+const PAGE_SEARCH = 3;
+const TELEGRAM_URL = process.env.TELEGRAM_URL;
+const ENVIRONMENT = process.env.ENVIRONMENT;
+const ENDPOINT = ENVIRONMENT === 'prod' ? 'https://dynamodb.us-east-2.amazonaws.com' : 'http://dynamodb:8000';
+
+const documentClient = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10', endpoint: ENDPOINT})
+
+AWS.config.update({region: 'us-east-2'});
 
 exports.handler = async (event) => {
     const results = [];
@@ -33,14 +39,14 @@ exports.handler = async (event) => {
 
         /** Var data will store the results of all promises */
         const data = await Promise.all(results);
-        
-        data.forEach(array => { 
+
+        data.forEach(array => {
             /** We spread the array on retrievedPromos */
             retrievedPromos.push(...array);
         })
-    
+
         /** DynamoDB instance */
-        const documentClient = new AWS.DynamoDB.DocumentClient();
+
         const params = {
             TableName: "promo_bot_mx_promos",
         }
@@ -50,8 +56,10 @@ exports.handler = async (event) => {
         const currentPromos = Promo.batchFromRaw(rawPromos)
 
         /** We call the function that will verify the existence of a promo and store it if new */
-        const elems = await checkAndStore(retrievedPromos, currentPromos);
-        await broadcast(elems);
+        const items = await checkAndStore(retrievedPromos, currentPromos);
+        if(ENVIRONMENT === 'prod') {
+            await broadcast(items);
+        }
         responseBody = `Elements saved successfully`
         statusCode = 200;
     }
@@ -68,29 +76,29 @@ exports.handler = async (event) => {
     };
 }
 
-/** 
- * It starts the search on the site passed as url parameter 
+/**
+ * It starts the search on the site passed as url parameter
  * @param {String} url: Website to scrap.
  */
 const scrapURL = async (url) => {
-        const promos = []
-        const options = { timeout: 3000 } //Three seconds of timeout.
-        const response = await got(url, options);
-        const $ = cheerio.load(response.body);
+    const promos = []
+    const options = { timeout: 3000 } //Three seconds of timeout.
+    const response = await got(url, options);
+    const $ = cheerio.load(response.body);
 
-        /** We filter those thread deals that are not expired */
-        $('.thread--deal:not(.thread--expired)').each((_, article) => {
-                const promo = Promo.newInstance($(article));
-                promos.push(promo);
-            }
-        )
-        return promos;
+    /** We filter those thread deals that are not expired */
+    $('.thread--deal:not(.thread--expired)').each((_, article) => {
+            const promo = Promo.newInstance($(article));
+            promos.push(promo);
+        }
+    )
+    return promos;
 }
 
 /**
  * Check the existing promos on database and store the new ones on DynamoDB
  * @param {Array} data: Retrieved items from scrapping.
- * @param {Array} currentPromos: Array with the current promos on DB. 
+ * @param {Array} currentPromos: Array with the current promos on DB.
  */
 const checkAndStore = async (data, currentPromos) => {
     let added = 0;
@@ -99,7 +107,7 @@ const checkAndStore = async (data, currentPromos) => {
     data = data.filter((promo) => {
         const p = currentPromos.filter( promoStored => {
             return promo.id == promoStored.id
-        }); 
+        });
         const newP = p.length == 0;
         added += newP ? 1 : 0; // We are counting the added elements.
         return newP;
@@ -107,24 +115,24 @@ const checkAndStore = async (data, currentPromos) => {
 
     console.log(`Added elements: ${added}`);
 
-    const documentClient = new AWS.DynamoDB.DocumentClient({region: 'us-east-2'});
     const results = [];
     console.log("Writing elements on database...");
-    
+
     data.forEach(promo => {
-        const params = {
-            TableName: "promo_bot_mx_promos",
-            Item: {
-                'id': promo.id,
-                'title': promo.title,
-                'temp': promo.temp,
-                'created_at': promo.created_at.getTime(),
-                'link': promo.link,
-                'price': promo.price
+            const params = {
+                TableName: "promo_bot_mx_promos",
+                Item: {
+                    'id': promo.id,
+                    'title': promo.title,
+                    'temp': promo.temp,
+                    'created_at': promo.created_at.getTime(),
+                    'link': promo.link,
+                    'price': promo.price
+                }
             }
+            results.push(documentClient.put(params).promise());
         }
-        results.push(documentClient.put(params).promise());
-    }
+
     );
     await Promise.all(results);
     return data;

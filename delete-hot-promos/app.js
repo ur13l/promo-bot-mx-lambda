@@ -7,15 +7,17 @@
 const AWS = require('aws-sdk');
 
 /** How many days will happen to consider an element ready to remove. */
-const DAY_THRESHOLD = 5
+const THRESHOLD_DAYS = process.env.THRESHOLD_DAYS
+const ENVIRONMENT = process.env.ENVIRONMENT;
+const ENDPOINT = ENVIRONMENT === 'prod' ? 'https://dynamodb.us-east-2.amazonaws.com' : 'http://dynamodb:8000';
+
+const documentClient = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10', endpoint: ENDPOINT})
 
 /** Lambda handler **/
 exports.handler = async (event) => {
-    const documentClient = new AWS.DynamoDB.DocumentClient();
-    const timeLimit = new Date().getTime() - (DAY_THRESHOLD * 24 * 60 * 60 * 1000); // Calculating time limit on seconds
-    let statusCode;
-    let responseBody;
-    console.log(timeLimit);
+    const timeLimit = new Date().getTime() - (THRESHOLD_DAYS * 24 * 60 * 60 * 1000); // Calculating time limit on seconds
+    let statusCode = 0 ;
+    let responseBody ={} ;
 
     try {
         /** Searching for the promos created before the threshold **/
@@ -33,7 +35,8 @@ exports.handler = async (event) => {
             const paramsDelete = {
                 TableName: 'promo_bot_mx_promos',
                 Key: {
-                    id: item.id
+                    id: item.id,
+                    created_at: item.created_at
                 }
             }
             results.push(documentClient.delete(paramsDelete).promise());
@@ -45,7 +48,7 @@ exports.handler = async (event) => {
         responseBody = `Number of promos removed:  ${results.length}`;
     } catch (err) {
         statusCode = 403;
-        responseBody = 'Operation error - ' + err; 
+        responseBody = 'Operation error - ' + err;
     }
 
     return {

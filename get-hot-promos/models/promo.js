@@ -6,10 +6,10 @@
 class Promo {
     /**
      * Constructor method for Promo
-     * @param {String} id 
-     * @param {Number} temp 
-     * @param {String} title 
-     * @param {String} link 
+     * @param {String} id
+     * @param {Number} temp
+     * @param {String} title
+     * @param {String} link
      * @param {Date} created_at
      * @param {String} price
      */
@@ -24,7 +24,7 @@ class Promo {
 
     /**
      * Static method to generate a new Instance from a raw Item from cheerio.
-     * @param {*} rawArticle 
+     * @param {*} rawArticle
      */
     static newInstance(rawArticle) {
         return new Promo(
@@ -38,7 +38,7 @@ class Promo {
 
     /**
      * Static method to return an array of Promos from a DynamoDB result.
-     * @param {Array} array 
+     * @param {Array} array
      */
     static batchFromRaw(array) {
         const promos = []
@@ -49,16 +49,16 @@ class Promo {
                 elem.title,
                 elem.link,
                 elem.price,
-                new Date(elem.created_at) 
+                new Date(elem.created_at)
             ));
         });
         return promos;
     }
-    
+
     /**
      * Cheerio helper method to scrap HTML from selector
-     * @param {*} elem 
-     * @param {String} selector 
+     * @param {*} elem
+     * @param {String} selector
      */
     static extractHTML(elem, selector) {
         const value = elem.find(selector).html();
@@ -70,9 +70,9 @@ class Promo {
 
     /**
      * Cheerio helper method to get an attribute of an element
-     * @param {*} elem 
-     * @param {String} selector 
-     * @param {String} attr 
+     * @param {*} elem
+     * @param {String} selector
+     * @param {String} attr
      */
     static extractAttr(elem, selector, attr) {
         const value = elem.find(selector).attr(attr);
@@ -81,6 +81,6 @@ class Promo {
         }
         return null;
     }
-} 
+}
 
 module.exports = Promo;
