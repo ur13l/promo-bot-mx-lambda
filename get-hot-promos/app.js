@@ -17,8 +17,8 @@ AWS.config.update({region: 'us-east-2'});
 
 exports.handler = async (event) => {
     const results = [];
-    let responseBody;
-    let statusCode;
+    let responseBody = {};
+    let statusCode = 0;
 
     /** Iteration over sites loaded from json */
     sites.forEach(site => {

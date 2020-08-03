@@ -16,9 +16,8 @@ const documentClient = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10'
 /** Lambda handler **/
 exports.handler = async (event) => {
     const timeLimit = new Date().getTime() - (THRESHOLD_DAYS * 24 * 60 * 60 * 1000); // Calculating time limit on seconds
-    let statusCode;
-    let responseBody;
-    console.log(timeLimit);
+    let statusCode = 0 ;
+    let responseBody ={} ;
 
     try {
         /** Searching for the promos created before the threshold **/
