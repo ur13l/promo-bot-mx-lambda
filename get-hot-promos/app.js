@@ -9,13 +9,14 @@ const sites = require('./sites');
 const PAGE_SEARCH = 3;
 const TELEGRAM_URL = process.env.TELEGRAM_URL;
 const ENVIRONMENT = process.env.ENVIRONMENT;
-const ENDPOINT = ENVIRONMENT === 'prod' ? 'https://dynamodb.us-east-2.amazonaws.com' : 'http://dynamodb:8000';
+const ENDPOINT = process.env.ENDPOINT
 
 const documentClient = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10', endpoint: ENDPOINT})
 
 AWS.config.update({region: 'us-east-2'});
 
 exports.handler = async (event) => {
+    console.log(ENDPOINT);
     const results = [];
     let responseBody = {};
     let statusCode = 0;
