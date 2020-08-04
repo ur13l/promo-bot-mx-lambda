@@ -9,7 +9,7 @@ const AWS = require('aws-sdk');
 /** How many days will happen to consider an element ready to remove. */
 const THRESHOLD_DAYS = process.env.THRESHOLD_DAYS
 const ENVIRONMENT = process.env.ENVIRONMENT;
-const ENDPOINT = ENVIRONMENT === 'prod' ? 'https://dynamodb.us-east-2.amazonaws.com' : 'http://dynamodb:8000';
+const ENDPOINT = process.env.ENDPOINT
 
 const documentClient = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10', endpoint: ENDPOINT})
 

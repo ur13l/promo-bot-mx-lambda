@@ -24,6 +24,7 @@ Resources:
         Variables:
           TELEGRAM_URL: https://api.telegram.org/bot1342072847:AAEqGa6X5SPyudU1worL_UWkEvlqOHln0fY/sendMessage
           ENVIRONMENT: prod
+          ENDPOINT: https://dynamodb.us-east-2.amazonaws.com
       Events:
         ExecuteEvery20Minutes:
           Type: Schedule
@@ -42,6 +43,7 @@ Resources:
         Variables:
           ENVIRONMENT: prod
           THRESHOLD_DAYS: 5
+          ENDPOINT: https://dynamodb.us-east-2.amazonaws.com
       Events:
         ExecuteEveryDay:
           Type: Schedule
