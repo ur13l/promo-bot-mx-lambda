@@ -22,14 +22,14 @@ exports.handler = async (event) => {
 
     /** Iteration over sites loaded from json */
     sites.forEach(site => {
-        console.log(`Scrapping ${site.siteName} on course...`)
+        console.log(`Scrapping ${site.siteName} on course...`);
         site.routes.forEach(route => {
-            console.log(`Getting data from ${route.name}...`)
+            console.log(`Getting data from ${route.name}...`);
             /** We search a certain number of pages from each category */
             for(let i = 1 ; i <= PAGE_SEARCH; i++) {
-                const pageParam = `?page=${i}`
+                const pageParam = `?page=${i}`;
                 /** We save the promises on an array to wait for the resolution of all of them */
-                results.push(scrapURL(site.siteURL + route.path + pageParam, route.name))
+                results.push(scrapURL(site.siteURL + route.path + pageParam, route.name));
             }
         });
     });
@@ -84,11 +84,12 @@ const scrapURL = async (url) => {
     const promos = []
     const options = { timeout: 3000 } //Three seconds of timeout.
     const response = await got(url, options);
-    const $ = cheerio.load(response.body);
+    const $ = cheerio.load(response.body, { decodeEntities: false });
 
     /** We filter those thread deals that are not expired */
     $('.thread--deal:not(.thread--expired)').each((_, article) => {
             const promo = Promo.newInstance($(article));
+            console.log(promo.title);
             promos.push(promo);
         }
     )
