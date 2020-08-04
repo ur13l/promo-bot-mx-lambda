@@ -148,7 +148,7 @@ const broadcast = async (data) => {
     const messages = [];
     data.forEach(promo => {
         messages.push(sendMessage(`
-            ${promo.title} | ${promo.price? promo.price : ''} | ${promo.temp}º\n${promo.link}`));
+            ${promo.title} | ${promo.price? promo.price : ''} | ${promo.temp}\n${promo.link}`));
     });
     await Promise.all(messages);
 }
