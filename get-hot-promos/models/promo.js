@@ -29,7 +29,7 @@ class Promo {
     static newInstance(rawArticle) {
         return new Promo(
             rawArticle.attr('id'),
-            this.extractHTML(rawArticle, '.vote-temp--hot, .vote-temp--burn').replace('&#xB0;', ''),
+            this.extractHTML(rawArticle, '.vote-temp--hot, .vote-temp--burn'),
             this.extractHTML(rawArticle, '.thread-title--card'),
             this.extractAttr(rawArticle, '.thread-title--card', 'href'),
             this.extractHTML(rawArticle, '.thread-price')
