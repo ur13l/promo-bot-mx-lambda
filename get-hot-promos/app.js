@@ -89,7 +89,6 @@ const scrapURL = async (url) => {
     /** We filter those thread deals that are not expired */
     $('.thread--deal:not(.thread--expired)').each((_, article) => {
             const promo = Promo.newInstance($(article));
-            console.log(promo.title);
             promos.push(promo);
         }
     )
