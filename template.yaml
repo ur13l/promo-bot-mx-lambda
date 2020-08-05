@@ -16,7 +16,6 @@ Resources:
     Properties:
       CodeUri: get-hot-promos/
       Handler: app.handler
-      Runtime: nodejs12.x
       MemorySize: 1024
       Timeout: 5
       Role: arn:aws:iam::919590014828:role/LambdaExecutionDynamoDBRole
@@ -35,7 +34,6 @@ Resources:
     Properties:
       CodeUri: delete-hot-promos/
       Handler: app.handler
-      Runtime: nodejs12.x
       MemorySize: 128
       Timeout: 5
       Role: arn:aws:iam::919590014828:role/LambdaExecutionDynamoDBRole
@@ -50,9 +48,6 @@ Resources:
           Properties:
             Schedule: rate(1 day)
 Outputs:
-  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
-  # Find out more about other implicit resources you can reference within SAM
-  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   GetHotPromos:
     Description: "Lambda to get and save new Hot Promos"
     Value: !GetAtt GetHotPromos.Arn
