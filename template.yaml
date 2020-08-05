@@ -47,6 +47,26 @@ Resources:
           Type: Schedule
           Properties:
             Schedule: rate(1 day)
+  PromosTable:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: created_at
+          AttributeType: 'N'
+      TableName: promo_bot_mx_promos
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+        - AttributeName: created_at
+          KeyType: RANGE
+      TableStatus: ACTIVE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 0
+        WriteCapacityUnits: 0
+      BillingModeSummary:
+        BillingMode: PAY_PER_REQUEST
 Outputs:
   GetHotPromos:
     Description: "Lambda to get and save new Hot Promos"
