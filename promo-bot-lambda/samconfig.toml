@@ -1,0 +1,11 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "promo-bot-mx"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-hzn5xig19724"
+s3_prefix = "promo-bot-mx"
+region = "us-west-2"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+
