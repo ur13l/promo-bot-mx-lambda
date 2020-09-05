@@ -34,19 +34,12 @@ exports.handler = async (event) => {
         });
     });
     try {
-        /** Array to keep all the new promos from scrapping */
-        const retrievedPromos = [];
 
         /** Var data will store the results of all promises */
         const data = await Promise.all(results);
-
-        data.forEach(array => {
-            /** We spread the array on retrievedPromos */
-            retrievedPromos.push(...array);
-        })
+        const retrievedPromos = data.reduce((generalArray, specificArray) => [...generalArray, ...specificArray],[])
 
         /** DynamoDB instance */
-
         const params = {
             TableName: "promo_bot_mx_promos",
         }
