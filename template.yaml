@@ -17,7 +17,7 @@ Resources:
       CodeUri: get-hot-promos/
       Handler: app.handler
       MemorySize: 1024
-      Timeout: 5
+      Timeout: 6
       Role: arn:aws:iam::919590014828:role/LambdaExecutionDynamoDBRole
       Environment:
         Variables:
