@@ -74,7 +74,7 @@ typings/
 .yarn-integrity
 
 # dotenv environment variables file
-.env
+.env*
 
 
 ### OSX ###
@@ -136,3 +136,6 @@ env.json
 .idea/*
 
 *.lock
+
+# csv to dynamodb
+csv-to-dynamodb/*.csv

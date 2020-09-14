@@ -3,14 +3,14 @@ const parse = require('csv-parse/lib/sync')
 const AWS = require('aws-sdk')
 
 const credentials = new AWS.SharedIniFileCredentials({
-    profile: 'leo-promo-bot'
+    profile: process.env.AWS_LOCAL_PROFILE
 });
 AWS.config.credentials = credentials;
 const docClient = new AWS.DynamoDB.DocumentClient({
     region: 'us-east-2',
     apiVersion: "2011-12-05"
 });
-const file = 'promo_bot_mx_promos_3.csv';
+const file = 'promo_bot_mx_promos_1.csv';
 const table = 'promo_bot_mx_promos';
 
 const contents = fs.readFileSync(file, 'utf-8');
