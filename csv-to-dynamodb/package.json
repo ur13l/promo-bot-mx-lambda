@@ -1,0 +1,11 @@
+{
+  "name": "csvtodynamodb",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.751.0",
+    "csv-parse": "^4.12.0",
+    "fs": "^0.0.1-security"
+  }
+}

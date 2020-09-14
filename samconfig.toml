@@ -6,6 +6,7 @@ stack_name = "promo-bot-mx"
 s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1lbrj7qg8q7vf"
 s3_prefix = "promo-bot-mx"
 region = "us-east-2"
+profile = "leo-promo-bot"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"
 

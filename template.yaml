@@ -4,7 +4,7 @@ Description: >
   promo-bot-mx
 
   Sample SAM Template for promo-bot-mx
-  
+
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
@@ -61,12 +61,7 @@ Resources:
           KeyType: HASH
         - AttributeName: created_at
           KeyType: RANGE
-      TableStatus: ACTIVE
-      ProvisionedThroughput:
-        ReadCapacityUnits: 0
-        WriteCapacityUnits: 0
-      BillingModeSummary:
-        BillingMode: PAY_PER_REQUEST
+      BillingMode: PAY_PER_REQUEST
 Outputs:
   GetHotPromos:
     Description: "Lambda to get and save new Hot Promos"
