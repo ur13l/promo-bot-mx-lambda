@@ -5,6 +5,10 @@ Description: >
 
   Sample SAM Template for promo-bot-mx
 
+Parameters:
+  TelegramURL:
+    Type: String
+
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
@@ -21,7 +25,7 @@ Resources:
       Role: arn:aws:iam::919590014828:role/LambdaExecutionDynamoDBRole
       Environment:
         Variables:
-          TELEGRAM_URL: https://api.telegram.org/bot1342072847:AAEqGa6X5SPyudU1worL_UWkEvlqOHln0fY/sendMessage
+          TELEGRAM_URL: !Ref TelegramURL
           ENVIRONMENT: prod
           ENDPOINT: https://dynamodb.us-east-2.amazonaws.com
       Events:
