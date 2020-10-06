@@ -30,8 +30,8 @@ class Promo {
         return new Promo(
             rawArticle.attr('id'),
             this.extractHTML(rawArticle, '.vote-temp--hot, .vote-temp--burn'),
-            this.extractHTML(rawArticle, '.thread-title--card'),
-            this.extractAttr(rawArticle, '.thread-title--card', 'href'),
+            this.extractAttr(rawArticle, '.thread-link', 'title'),
+            this.extractAttr(rawArticle, '.thread-link', 'href'),
             this.extractHTML(rawArticle, '.thread-price')
         )
     }
