@@ -125,7 +125,6 @@ const checkAndStore = async (data, currentPromos) => {
             }
             results.push(documentClient.put(params).promise());
         }
-
     );
     await Promise.all(results);
     return data;
