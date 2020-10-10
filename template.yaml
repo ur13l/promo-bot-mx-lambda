@@ -8,6 +8,8 @@ Description: >
 Parameters:
   TelegramURL:
     Type: String
+  TelegramChatId:
+    Type: String
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
@@ -26,6 +28,7 @@ Resources:
       Environment:
         Variables:
           TELEGRAM_URL: !Ref TelegramURL
+          TELEGRAM_CHAT_ID: !Ref TelegramChatId
           ENVIRONMENT: prod
           ENDPOINT: https://dynamodb.us-east-2.amazonaws.com
       Events:
