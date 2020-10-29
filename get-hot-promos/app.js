@@ -8,7 +8,7 @@ const sites = require('./sites');
 
 const PAGE_SEARCH = 3;
 const TELEGRAM_URL = process.env.TELEGRAM_URL;
-const ENVIRONMENT = process.env.ENVIRONMENT;
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 const ENDPOINT = process.env.ENDPOINT
 
 const documentClient = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10', endpoint: ENDPOINT})
@@ -50,9 +50,7 @@ exports.handler = async (event) => {
 
         /** We call the function that will verify the existence of a promo and store it if new */
         const items = await checkAndStore(retrievedPromos, currentPromos);
-        if(ENVIRONMENT === 'prod') {
-            await broadcast(items);
-        }
+        await broadcast(items);
         responseBody = `Elements saved successfully`
         statusCode = 200;
     }
@@ -150,10 +148,11 @@ const broadcast = async (data) => {
  * @returns {Promise<*|CancelableRequest<Response<string>>>}
  */
 const sendMessage = async (message) => {
+    console.log(TELEGRAM_URL + "?chat_id=" + TELEGRAM_CHAT_ID + "&text=" + message)
     const params = {
         timeout: 3000,
         searchParams: {
-            chat_id:'-1001159959356',
+            chat_id: TELEGRAM_CHAT_ID,
             text: message
         }
     }
