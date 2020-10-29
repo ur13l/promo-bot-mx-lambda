@@ -5,11 +5,20 @@ const cheerio = require('cheerio');
 const got = require('got');
 const Promo = require('./models/promo');
 const sites = require('./sites');
+const OAuth = require('oauth');
 
 const PAGE_SEARCH = 3;
-const TELEGRAM_URL = process.env.TELEGRAM_URL;
-const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
-const ENDPOINT = process.env.ENDPOINT
+
+const {
+    TELEGRAM_URL,
+    TELEGRAM_CHAT_ID,
+    ENDPOINT,
+    TWITTER_APPLICATION_CONSUMER_KEY,
+    TWITTER_APPLICATION_SECRET,
+    TWITTER_USER_ACCESS_TOKEN,
+    TWITTER_USER_SECRET
+} = process.env;
+
 const documentClient = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10', endpoint: ENDPOINT})
 AWS.config.update({region: 'us-east-2'});
 
@@ -102,23 +111,30 @@ const storePromos = async retrievedPromos => {
     return retrievedPromos;
 }
 
-const broadcastTelegram = async data => {
-    console.log(data);
+const broadcast = async data => {
     const messages = [];
+    const tweets = [];
+    const oauth = new OAuth.OAuth(
+        'https://api.twitter.com/oauth/request_token',
+        'https://api.twitter.com/oauth/access_token',
+        TWITTER_APPLICATION_CONSUMER_KEY,
+        TWITTER_APPLICATION_SECRET,
+        '1.0A',
+        null,
+        'HMAC-SHA1'
+    )
+
     data.forEach(promo => {
-        messages.push(sendMessageTelegram(`
-            ${promo.title} | ${promo.price? promo.price : ''} | ${promo.temp}\n${promo.link}`));
+        const msg = `${promo.title} | ${promo.price? promo.price : ''} | ${promo.temp}\n${promo.link}`;
+        messages.push(sendMessageTelegram(msg));
+        tweets.push(sendTweet(msg, oauth))
     });
     await Promise.all(messages);
     return data;
 }
 
-const broadcastTwitter = async data => {
-    //TODO: Broadcast Twitter functionallity
-}
 
 const sendMessageTelegram = async message => {
-    console.log(TELEGRAM_URL + "?chat_id=" + TELEGRAM_CHAT_ID + "&text=" + message)
     const params = {
         timeout: 3000,
         searchParams: {
@@ -127,6 +143,31 @@ const sendMessageTelegram = async message => {
         }
     }
     return got(TELEGRAM_URL, params);
+}
+
+const sendTweet = async (status, oauth) => {
+    const postBody = {
+        status
+    }
+    await oauthPost(postBody, oauth)
+
+}
+
+const oauthPost = async (body, oauth) => {
+    oauth.post('https://api.twitter.com/1.1/statuses/update.json',
+        TWITTER_USER_ACCESS_TOKEN, TWITTER_USER_SECRET,
+        body,
+        '',
+        (err, data, res) => {
+            if (err) {
+                console.log(err);
+                return err;
+            }
+            else {
+                return true;
+            }
+        }
+        )
 }
 
 exports.handler = async (event) => {
@@ -140,8 +181,7 @@ exports.handler = async (event) => {
             getDBItems,
             filterPromos,
             storePromos,
-            broadcastTelegram,
-            broadcastTwitter
+            broadcast
         )(sites);
         body = `Elements saved successfully`
         statusCode = 200;

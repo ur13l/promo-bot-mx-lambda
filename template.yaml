@@ -10,6 +10,14 @@ Parameters:
     Type: String
   TelegramChatId:
     Type: String
+  TwitterApplicationConsumerKey:
+    Type: String
+  TwitterApplicationSecret:
+    Type: String
+  TwitterUserAccessToken:
+    Type: String
+  TwitterUserSecret:
+    Type: String
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
@@ -29,6 +37,10 @@ Resources:
         Variables:
           TELEGRAM_URL: !Ref TelegramURL
           TELEGRAM_CHAT_ID: !Ref TelegramChatId
+          TWITTER_APPLICATION_CONSUMER_KEY: !Ref TwitterApplicationConsumerKey
+          TWITTER_APPLICATION_SECRET: !Ref TwitterApplicationSecret
+          TWITTER_USER_ACCESS_TOKEN: !Ref TwitterUserAccessToken
+          TWITTER_USER_SECRET: !Ref TwitterUserSecret
           ENVIRONMENT: prod
           ENDPOINT: https://dynamodb.us-east-2.amazonaws.com
       Events:
