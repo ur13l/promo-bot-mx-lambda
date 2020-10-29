@@ -10,67 +10,11 @@ const PAGE_SEARCH = 3;
 const TELEGRAM_URL = process.env.TELEGRAM_URL;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 const ENDPOINT = process.env.ENDPOINT
-
 const documentClient = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10', endpoint: ENDPOINT})
-
 AWS.config.update({region: 'us-east-2'});
 
-exports.handler = async (event) => {
-    const results = [];
-    let responseBody = {};
-    let statusCode = 0;
+const compose = (...fns) => arg => fns.reduce((composed,f) => composed.then(f), Promise.resolve(arg));
 
-    /** Iteration over sites loaded from json */
-    sites.forEach(site => {
-        console.log(`Scrapping ${site.siteName} on course...`);
-        site.routes.forEach(route => {
-            console.log(`Getting data from ${route.name}...`);
-            /** We search a certain number of pages from each category */
-            for(let i = 1 ; i <= PAGE_SEARCH; i++) {
-                const pageParam = `?page=${i}`;
-                /** We save the promises on an array to wait for the resolution of all of them */
-                results.push(scrapURL(site.siteURL + route.path + pageParam, route.name));
-            }
-        });
-    });
-    try {
-
-        /** Var data will store the results of all promises */
-        const data = await Promise.all(results);
-        const retrievedPromos = data.reduce((generalArray, specificArray) => [...generalArray, ...specificArray],[])
-
-        /** DynamoDB instance */
-        const params = {
-            TableName: "promo_bot_mx_promos",
-        }
-
-        /** Getting all promos from database as Promo objects*/
-        const rawPromos = (await documentClient.scan(params).promise()).Items;
-        const currentPromos = Promo.batchFromRaw(rawPromos)
-
-        /** We call the function that will verify the existence of a promo and store it if new */
-        const items = await checkAndStore(retrievedPromos, currentPromos);
-        await broadcast(items);
-        responseBody = `Elements saved successfully`
-        statusCode = 200;
-    }
-    catch(err) {
-        console.error(err);
-        responseBody = 'There was an error on the request: ' + err;
-        statusCode = 403;
-    }
-
-
-    return {
-        statusCode: statusCode,
-        body: responseBody
-    };
-}
-
-/**
- * It starts the search on the site passed as url parameter
- * @param {String} url: Website to scrap.
- */
 const scrapURL = async (url) => {
     const promos = []
     const options = { timeout: 3000 } //Three seconds of timeout.
@@ -86,30 +30,60 @@ const scrapURL = async (url) => {
     return promos;
 }
 
-/**
- * Check the existing promos on database and store the new ones on DynamoDB
- * @param {Array} data: Retrieved items from scrapping.
- * @param {Array} currentPromos: Array with the current promos on DB.
- */
-const checkAndStore = async (data, currentPromos) => {
-    let added = 0;
+const iterateSites = async sites => {
+    const results = [];
 
-    /** Double filter to remove those elements retrieved that already exists on DB*/
-    data = data.filter((promo) => {
-        const p = currentPromos.filter( promoStored => {
-            return promo.id == promoStored.id
+    /** Iteration over sites loaded from json */
+    sites.forEach(site => {
+        console.log(`Scrapping ${site.siteName} on course...`);
+        site.routes.forEach(route => {
+            console.log(`Getting data from ${route.name}...`);
+            /** We search a certain number of pages from each category */
+            for(let i = 1 ; i <= PAGE_SEARCH; i++) {
+                const pageParam = `?page=${i}`;
+                /** We save the promises on an array to wait for the resolution of all of them */
+                results.push(scrapURL(site.siteURL + route.path + pageParam, route.name));
+            }
         });
-        const newP = p.length == 0;
-        added += newP ? 1 : 0; // We are counting the added elements.
+    });
+    return Promise.all(results);
+}
+
+const mergeRetrievedPromos = async results => {
+    /** Var results will store the results of all promises */
+    return results.reduce((generalArray, specificArray) => [...generalArray, ...specificArray],[]);
+}
+
+const getDBItems = async retrievedPromos => {
+    /** DynamoDB instance */
+    const params = {
+        TableName: "promo_bot_mx_promos",
+    }
+
+    /** Getting all promos from database as Promo objects*/
+    const rawPromos = (await documentClient.scan(params).promise()).Items;
+
+    return {
+        retrievedPromos,
+        currentPromos: Promo.batchFromRaw(rawPromos)
+    }
+}
+
+const filterPromos = async ({retrievedPromos, currentPromos}) => {
+    /** Double filter to remove those elements retrieved that already exists on DB*/
+    return retrievedPromos.filter((promo) => {
+        const p = currentPromos.filter( promoStored => {
+            return promo.id === promoStored.id
+        });
+        const newP = p.length === 0;
         return newP;
     });
+}
 
-    console.log(`Added elements: ${added}`);
-
+const storePromos = async retrievedPromos => {
     const results = [];
     console.log("Writing elements on database...");
-
-    data.forEach(promo => {
+    retrievedPromos.forEach(promo => {
             const params = {
                 TableName: "promo_bot_mx_promos",
                 Item: {
@@ -125,29 +99,25 @@ const checkAndStore = async (data, currentPromos) => {
         }
     );
     await Promise.all(results);
-    return data;
+    return retrievedPromos;
 }
 
-/**
- * Broadcast elements
- * @param data
- * @returns {Promise<void>}
- */
-const broadcast = async (data) => {
+const broadcastTelegram = async data => {
+    console.log(data);
     const messages = [];
     data.forEach(promo => {
-        messages.push(sendMessage(`
+        messages.push(sendMessageTelegram(`
             ${promo.title} | ${promo.price? promo.price : ''} | ${promo.temp}\n${promo.link}`));
     });
     await Promise.all(messages);
+    return data;
 }
 
-/**
- * Sending message to Telegram Channel
- * @param message
- * @returns {Promise<*|CancelableRequest<Response<string>>>}
- */
-const sendMessage = async (message) => {
+const broadcastTwitter = async data => {
+    //TODO: Broadcast Twitter functionallity
+}
+
+const sendMessageTelegram = async message => {
     console.log(TELEGRAM_URL + "?chat_id=" + TELEGRAM_CHAT_ID + "&text=" + message)
     const params = {
         timeout: 3000,
@@ -158,4 +128,37 @@ const sendMessage = async (message) => {
     }
     return got(TELEGRAM_URL, params);
 }
+
+exports.handler = async (event) => {
+    let body = {};
+    let statusCode = 0;
+
+    try {
+         await compose(
+            iterateSites,
+            mergeRetrievedPromos,
+            getDBItems,
+            filterPromos,
+            storePromos,
+            broadcastTelegram,
+            broadcastTwitter
+        )(sites);
+        body = `Elements saved successfully`
+        statusCode = 200;
+    }
+    catch(err) {
+        console.error(err);
+        body = 'There was an error on the request: ' + err;
+        statusCode = 403;
+    }
+
+    return {
+        statusCode,
+        body
+    };
+}
+
+
+
+
 
