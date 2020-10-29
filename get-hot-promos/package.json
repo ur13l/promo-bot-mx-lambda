@@ -23,6 +23,7 @@
   "homepage": "https://github.com/ur13l/promo-bot-mx-lambda#readme",
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
-    "got": "^11.5.1"
+    "got": "^11.5.1",
+    "oauth": "^0.9.15"
   }
 }
