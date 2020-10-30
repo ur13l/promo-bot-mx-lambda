@@ -1,34 +1,31 @@
 'use strict'
 
-const AWS = require('aws-sdk');
-const cheerio = require('cheerio');
-const got = require('got');
-const Promo = require('./models/promo');
-const sites = require('./sites');
-const OAuth = require('oauth');
-
-const PAGE_SEARCH = 3;
-
-const {
-    TELEGRAM_URL,
-    TELEGRAM_CHAT_ID,
-    ENDPOINT,
-    TWITTER_APPLICATION_CONSUMER_KEY,
-    TWITTER_APPLICATION_SECRET,
-    TWITTER_USER_ACCESS_TOKEN,
-    TWITTER_USER_SECRET
-} = process.env;
+const AWS = require('aws-sdk'),
+    cheerio = require('cheerio'),
+    got = require('got'),
+    Promo = require('./models/promo'),
+    sites = require('./sites'),
+    OAuth = require('oauth'),
+    PAGE_SEARCH = 3,
+    {
+        TELEGRAM_URL,
+        TELEGRAM_CHAT_ID,
+        ENDPOINT,
+        TWITTER_APPLICATION_CONSUMER_KEY,
+        TWITTER_APPLICATION_SECRET,
+        TWITTER_USER_ACCESS_TOKEN,
+        TWITTER_USER_SECRET
+    } = process.env;
 
 const documentClient = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10', endpoint: ENDPOINT})
-AWS.config.update({region: 'us-east-2'});
 
-const compose = (...fns) => arg => fns.reduce((composed,f) => composed.then(f), Promise.resolve(arg));
+const compose = (...fns) => arg => fns.reduce((composed, f) => composed.then(f), Promise.resolve(arg));
 
 const scrapURL = async (url) => {
-    const promos = []
-    const options = { timeout: 3000 } //Three seconds of timeout.
-    const response = await got(url, options);
-    const $ = cheerio.load(response.body, { decodeEntities: false });
+    const promos = [],
+        options = {timeout: 3000},
+        response = await got(url, options),
+        $ = cheerio.load(response.body, {decodeEntities: false});
 
     /** We filter those thread deals that are not expired */
     $('.thread--deal:not(.thread--expired)').each((_, article) => {
@@ -48,7 +45,7 @@ const iterateSites = async sites => {
         site.routes.forEach(route => {
             console.log(`Getting data from ${route.name}...`);
             /** We search a certain number of pages from each category */
-            for(let i = 1 ; i <= PAGE_SEARCH; i++) {
+            for (let i = 1; i <= PAGE_SEARCH; i++) {
                 const pageParam = `?page=${i}`;
                 /** We save the promises on an array to wait for the resolution of all of them */
                 results.push(scrapURL(site.siteURL + route.path + pageParam, route.name));
@@ -58,19 +55,24 @@ const iterateSites = async sites => {
     return Promise.all(results);
 }
 
-const mergeRetrievedPromos = async results => {
-    /** Var results will store the results of all promises */
-    return results.reduce((generalArray, specificArray) => [...generalArray, ...specificArray],[]);
-}
+const mergeRetrievedPromos = async results =>
+    results.reduce((generalArray, specificArray) =>
+        [...generalArray, ...specificArray], []);
+
+const removeRepeated = async retrievedPromos =>
+    retrievedPromos.filter((elem, index, self) =>
+        index === self.findIndex(p =>
+            p.id === elem.id
+        )
+    )
 
 const getDBItems = async retrievedPromos => {
     /** DynamoDB instance */
     const params = {
-        TableName: "promo_bot_mx_promos",
-    }
-
-    /** Getting all promos from database as Promo objects*/
-    const rawPromos = (await documentClient.scan(params).promise()).Items;
+            TableName: "promo_bot_mx_promos",
+        },
+        /** Getting all promos from database as Promo objects*/
+        rawPromos = (await documentClient.scan(params).promise()).Items;
 
     return {
         retrievedPromos,
@@ -81,11 +83,8 @@ const getDBItems = async retrievedPromos => {
 const filterPromos = async ({retrievedPromos, currentPromos}) => {
     /** Double filter to remove those elements retrieved that already exists on DB*/
     return retrievedPromos.filter((promo) => {
-        const p = currentPromos.filter( promoStored => {
-            return promo.id === promoStored.id
-        });
-        const newP = p.length === 0;
-        return newP;
+        const p = currentPromos.filter(promoStored => promo.id === promoStored.id);
+        return p.length === 0;
     });
 }
 
@@ -93,18 +92,21 @@ const storePromos = async retrievedPromos => {
     const results = [];
     console.log("Writing elements on database...");
     retrievedPromos.forEach(promo => {
-            const params = {
-                TableName: "promo_bot_mx_promos",
-                Item: {
-                    'id': promo.id,
-                    'title': promo.title,
-                    'temp': promo.temp,
-                    'created_at': promo.created_at.getTime(),
-                    'link': promo.link,
-                    'price': promo.price
+            //Check if link exists before saving the new promo
+            if (promo.link) {
+                const params = {
+                    TableName: "promo_bot_mx_promos",
+                    Item: {
+                        'id': promo.id,
+                        'title': promo.title,
+                        'temp': promo.temp,
+                        'created_at': promo.created_at.getTime(),
+                        'link': promo.link,
+                        'price': promo.price
+                    }
                 }
+                results.push(documentClient.put(params).promise());
             }
-            results.push(documentClient.put(params).promise());
         }
     );
     await Promise.all(results);
@@ -112,27 +114,28 @@ const storePromos = async retrievedPromos => {
 }
 
 const broadcast = async data => {
-    const messages = [];
-    const tweets = [];
-    const oauth = new OAuth.OAuth(
-        'https://api.twitter.com/oauth/request_token',
-        'https://api.twitter.com/oauth/access_token',
-        TWITTER_APPLICATION_CONSUMER_KEY,
-        TWITTER_APPLICATION_SECRET,
-        '1.0A',
-        null,
-        'HMAC-SHA1'
-    )
+    const messages = [],
+        oauth = new OAuth.OAuth(
+            'https://api.twitter.com/oauth/request_token',
+            'https://api.twitter.com/oauth/access_token',
+            TWITTER_APPLICATION_CONSUMER_KEY,
+            TWITTER_APPLICATION_SECRET,
+            '1.0A',
+            null,
+            'HMAC-SHA1'
+        )
 
     data.forEach(promo => {
-        const msg = `${promo.title} | ${promo.price? promo.price : ''} | ${promo.temp}\n${promo.link}`;
-        messages.push(sendMessageTelegram(msg));
-        tweets.push(sendTweet(msg, oauth))
+        const {title, price, temp, link} = promo;
+        if (link) {
+            const msg = `${title} | ${price || ''} | ${temp || ''}\n ${link}`;
+            messages.push(sendMessageTelegram(msg));
+            messages.push(sendTweet(msg, oauth))
+        }
     });
     await Promise.all(messages);
     return data;
 }
-
 
 const sendMessageTelegram = async message => {
     const params = {
@@ -150,7 +153,6 @@ const sendTweet = async (status, oauth) => {
         status
     }
     await oauthPost(postBody, oauth)
-
 }
 
 const oauthPost = async (body, oauth) => {
@@ -158,26 +160,26 @@ const oauthPost = async (body, oauth) => {
         TWITTER_USER_ACCESS_TOKEN, TWITTER_USER_SECRET,
         body,
         '',
-        (err, data, res) => {
+        err => {
             if (err) {
                 console.log(err);
                 return err;
-            }
-            else {
+            } else {
                 return true;
             }
         }
-        )
+    )
 }
 
-exports.handler = async (event) => {
+exports.handler = async () => {
     let body = {};
     let statusCode = 0;
 
     try {
-         await compose(
+        await compose(
             iterateSites,
             mergeRetrievedPromos,
+            removeRepeated,
             getDBItems,
             filterPromos,
             storePromos,
@@ -185,10 +187,9 @@ exports.handler = async (event) => {
         )(sites);
         body = `Elements saved successfully`
         statusCode = 200;
-    }
-    catch(err) {
+    } catch (err) {
         console.error(err);
-        body = 'There was an error on the request: ' + err;
+        body = `There was an error on the request: ${err}`;
         statusCode = 403;
     }
 
